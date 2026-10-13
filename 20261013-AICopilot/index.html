@@ -1,0 +1,1013 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>方案 F – 建議回覆／OmniAI 按輸入框狀態切換</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+TC:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#6366F1}a:hover{color:#4338CA}
+button{font-family:inherit}
+textarea{font-family:inherit}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin 0.8s linear infinite}
+.sug-in:focus{border-color:#6366F1 !important;box-shadow:0 0 0 3px rgba(99,102,241,0.25)}
+.m-row:hover{background:#F7F8F9 !important}
+.cmd-ta::placeholder{color:#B9C0CB}
+@keyframes skpulse{0%,100%{opacity:1}50%{opacity:.55}}
+.sk{animation:skpulse 1.4s ease-in-out infinite}
+.note-ta:focus{border-color:#6366F1 !important;box-shadow:0 0 0 3px rgba(99,102,241,0.25)}
+#ai-instr:focus{border-color:#6366F1 !important;box-shadow:0 0 0 3px rgba(99,102,241,0.25)}
+button:focus-visible,a:focus-visible{outline:2px solid #6366F1;outline-offset:2px}
+.agent-opt{background:transparent;font-weight:400}
+.agent-opt:hover{background:#F7F8F9}
+.agent-opt.is-sel{background:#E8EAEE;font-weight:500;color:#444F5F}
+.studio-link:hover{background:#F7F8F9}
+</style>
+</helmet>
+<div onMouseDown="{{rootDown}}" style="position: relative; width: 1440px; height: 900px; display: flex; font-family: 'Inter', 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif; color: #505D6F; background: #ffffff; overflow: hidden">
+
+<!-- Rail -->
+<nav aria-label="主選單" style="width: 64px; flex-shrink: 0; background: #6366F1; display: flex; flex-direction: column; align-items: center; padding-top: 18px; gap: 14px">
+<div style="width: 40px; height: 40px; border-radius: 50%; background: #E0E7FF"></div>
+<div style="width: 40px; height: 40px; border-radius: 50%; background: #A5B4FC"></div>
+<div style="font-size: 11px; background: #16a34a; color: #ffffff; padding: 2px 8px; border-radius: 4px">上線中</div>
+<div style="width: 28px; height: 1px; background: rgba(255,255,255,0.35); margin: 6px 0"></div>
+<button aria-label="對話" style="width: 44px; height: 44px; border: none; border-radius: 10px; background: #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+</button>
+<button aria-label="報表" style="width: 44px; height: 44px; border: none; border-radius: 10px; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.2 15.9A10 10 0 1 1 8 2.8"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+</button>
+<button aria-label="機器人" style="width: 44px; height: 44px; border: none; border-radius: 10px; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="3"></rect><path d="M12 4v4"></path><circle cx="9" cy="14" r="1"></circle><circle cx="15" cy="14" r="1"></circle></svg>
+</button>
+</nav>
+
+<!-- Inbox nav -->
+<aside style="width: 200px; flex-shrink: 0; background: #F7F8F9; border-right: 1px solid #E8EAEE; display: flex; flex-direction: column; padding: 18px 12px; gap: 4px; font-size: 14px">
+<div style="font-size: 17px; font-weight: 700; padding: 0 8px 14px">所有渠道 ▾</div>
+<div style="font-size: 12px; color: #64748B; padding: 8px 8px 4px">待處理</div>
+<div style="display: flex; justify-content: space-between; padding: 8px"><span>真人客服</span><span style="color: #64748B">2</span></div>
+<div style="padding: 8px">機器人</div>
+<div style="padding: 8px">AI 客服</div>
+<div style="font-size: 12px; color: #64748B; padding: 14px 8px 4px">我的</div>
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #E0E7FF; border-radius: 8px; font-weight: 500"><span>處理中</span><span style="font-size: 11px; background: #e11d48; color: #ffffff; border-radius: 10px; padding: 1px 6px">999+</span></div>
+<div style="padding: 8px">已結束</div>
+<div style="font-size: 12px; color: #64748B; padding: 14px 8px 4px">團隊</div>
+<div style="padding: 8px">處理中</div>
+<div style="padding: 8px">已結束</div>
+</aside>
+
+<!-- Conversation list -->
+<section aria-label="我的處理中" style="width: 280px; flex-shrink: 0; border-right: 1px solid #E8EAEE; display: flex; flex-direction: column">
+<div style="height: 64px; display: flex; align-items: center; padding: 0 18px; font-size: 16px; font-weight: 700; border-bottom: 1px solid #E8EAEE">我的處理中</div>
+<div style="display: flex; gap: 8px; padding: 12px 18px">
+<span style="font-size: 12px; background: #E8EAEE; padding: 5px 10px; border-radius: 6px">最後訊息 新→舊 ▾</span>
+<span style="font-size: 12px; background: #E8EAEE; padding: 5px 10px; border-radius: 6px">篩選 ▾</span>
+</div>
+<sc-for list="{{convos}}" as="c" hint-placeholder-count="6">
+<div role="button" tabindex="0" onClick="{{c.pick}}" aria-current="{{c.cur}}" style="display: flex; gap: 12px; padding: 14px 18px; background: {{c.bg}}; border-bottom: 1px solid #E8EAEE; cursor: pointer">
+<div style="width: 44px; height: 44px; border-radius: 50%; background: {{c.color}}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0">{{c.initials}}</div>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+<div style="display: flex; justify-content: space-between"><span style="display: flex; align-items: center; gap: 6px; min-width: 0"><span style="font-size: 14px; font-weight: 500">{{c.name}}</span><sc-if value="{{c.hasAi}}" hint-placeholder-val="{{ false }}"><span style="flex-shrink: 0; display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 500; color: {{c.aiFg}}; background: {{c.aiBg}}; border: 1px solid #C7D2FE; padding: 0 6px; border-radius: 10px"><svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2z" fill="currentColor"></path></svg>{{c.aiLabel}}</span></sc-if></span><span style="font-size: 11px; color: #64748B; flex-shrink: 0">12-12 16:00</span></div>
+<div style="display: flex; justify-content: space-between; gap: 6px; align-items: center"><span style="font-size: 13px; color: #5C6B80; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{c.preview}}</span>
+<sc-if value="{{c.hasBadge}}" hint-placeholder-val="{{ true }}"><span style="font-size: 11px; background: #e11d48; color: #ffffff; border-radius: 10px; padding: 1px 6px; flex-shrink: 0">99+</span></sc-if></div>
+<span style="align-self: flex-start; font-size: 11px; background: #E8EAEE; padding: 2px 8px; border-radius: 4px">渠道名稱</span>
+</div>
+</div>
+</sc-for>
+</section>
+
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column">
+<header style="height: 64px; flex-shrink: 0; display: flex; align-items: center; gap: 12px; padding: 0 16px 0 20px; border-bottom: 1px solid #E8EAEE; background: #ffffff">
+<svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#9AA5B4"></circle><circle cx="20" cy="15.5" r="7" fill="#ffffff"></circle><path d="M7.5 32.5a14 14 0 0 1 25 0A19.9 19.9 0 0 1 20 40a19.9 19.9 0 0 1-12.5-7.5z" fill="#ffffff"></path></svg>
+<div style="font-size: 17px; font-weight: 700; color: #444F5F">{{chatName}}</div>
+<div style="flex-grow: 1"></div>
+<div style="display: flex; align-items: center; gap: 6px">
+<button aria-label="指派" style="width: 36px; height: 36px; border: none; background: transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="6.5" r="3.5" fill="#6366F1"></circle><path d="M2.5 20v-2a6 6 0 0 1 9-5.2V20z" fill="#6366F1"></path><circle cx="17" cy="16.5" r="5" fill="#ffffff" stroke="#6366F1" stroke-width="1.8"></circle><path d="M17 14v5M14.5 16.5h5" stroke="#6366F1" stroke-width="1.8" stroke-linecap="round"></path></svg></button>
+<div style="width: 1px; height: 24px; background: #E8EAEE; margin: 0 4px"></div>
+<button aria-label="轉派負責人" style="width: 36px; height: 36px; border: none; background: transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer"><span style="position: relative; width: 30px; height: 30px; border-radius: 50%; background: #9AA5B4; display: block"><span style="position: absolute; right: -4px; bottom: -4px; width: 16px; height: 16px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 1px #E8EAEE"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3"></path><path d="M18 3v4h-4M6 21v-4h4"></path></svg></span></span></button>
+<button aria-label="置頂" style="width: 36px; height: 36px; border: none; background: transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 2.5l7 7-2.2.8-4 4 .5 4.2-1.8 1.8-4.2-4.2L4 22l-2-2 5.9-5.8-4.2-4.2 1.8-1.8 4.2.5 4-4z" fill="#6366F1"></path></svg></button>
+<button aria-label="結束對話" style="width: 36px; height: 36px; border: none; background: transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button>
+<button aria-label="歷史紀錄" style="width: 36px; height: 36px; border: none; background: transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.5-6"></path><path d="M3 3.5V8h4.5"></path><path d="M12 7.5V12l3 2"></path></svg></button>
+<div style="width: 1px; height: 24px; background: #E8EAEE; margin: 0 4px"></div>
+<button aria-label="檢視" style="width: 36px; height: 36px; border: none; background: transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="10" ry="7.5"></ellipse><circle cx="12" cy="12" r="3"></circle></svg></button>
+<button aria-label="設定" style="width: 36px; height: 36px; border: none; background: transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path><circle cx="9" cy="6" r="1.8" fill="#ffffff"></circle><circle cx="15" cy="12" r="1.8" fill="#ffffff"></circle><circle cx="9" cy="18" r="1.8" fill="#ffffff"></circle></svg></button>
+</div>
+</header>
+<div style="flex-grow: 1; min-height: 0; display: flex">
+<!-- Chat -->
+<main style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; background: #ffffff">
+
+<div style="flex-grow: 1; min-height: 0; overflow-y: auto; padding: 18px 24px; display: flex; flex-direction: column; gap: 14px; background: #F7F8F9">
+<div style="align-self: center; font-size: 12px; background: #E8EAEE; padding: 3px 12px; border-radius: 12px; color: #5C6B80">今天</div>
+<div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start">
+<span style="font-size: 12px; color: #64748B">{{chatName}}</span>
+<div style="background: #E8EAEE; padding: 10px 14px; border-radius: 14px; font-size: 14px">Hello</div>
+<span style="font-size: 11px; color: #64748B">14:53</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start">
+<span style="font-size: 12px; color: #64748B">{{chatName}}</span>
+<div lang="{{msgLang}}" style="background: #E8EAEE; padding: 10px 14px; border-radius: 14px; font-size: 14px">{{msgText}}</div>
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="font-size: 11px; color: #64748B">14:53</span>
+<sc-if value="{{isJa}}" hint-placeholder-val="{{ true }}"><button onClick="{{toggleMsgTrans}}" aria-pressed="{{msgTransStr}}" style="height: 22px; padding: 0 6px; display: flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 500; color: #4338CA; background: transparent; border: none; border-radius: 4px; cursor: pointer">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h9M8.5 3v2M6 5c.5 3 2.5 5.5 5 7"></path><path d="M11 5c-.5 3-3 6-6 7.5"></path><path d="M13 21l4-9 4 9M14.5 18h5"></path></svg>{{msgTransLabel}}</button>
+<sc-if value="{{msgTrans}}" hint-placeholder-val="{{ false }}"><span style="font-size: 11px; color: #5C6B80">已翻譯 · 日本語 → 繁體中文</span></sc-if></sc-if>
+</div>
+</div>
+<sc-for list="{{sent}}" as="m" hint-placeholder-count="0">
+<div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end">
+<div style="max-width: 78%; background: #6366F1; color: #ffffff; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.6; white-space: pre-line">{{m.text}}</div>
+<span style="font-size: 11px; color: #64748B">14:55 · 已送出</span>
+</div>
+</sc-for>
+</div>
+
+<!-- AI suggestions panel -->
+<sc-if value="{{generating}}" hint-placeholder-val="{{ false }}">
+<section aria-live="polite" aria-label="正在生成建議回覆" style="flex-shrink: 0; border-top: 1px solid #E8EAEE; background: #EEF2FF; padding: 12px 20px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="font-size: 14px; line-height: 20px; font-weight: 700; color: #4F46E5; white-space: nowrap">建議回覆</span>
+<span style="font-size: 12px; line-height: 16px; font-weight: 400; color: #4338CA; background: #FEFEFE; border: 1px solid #E0E7FF; padding: 4px 8px; border-radius: 12px; white-space: nowrap">AI 正在思考...</span>
+</div>
+<sc-for list="{{skeletons}}" as="k" hint-placeholder-count="3">
+<div class="sk-card" style="background: #FEFEFE; border: 1px solid #E8EAEE; border-radius: 8px; padding: 8px 12px; display: flex; align-items: flex-start; gap: 8px">
+<span style="width: 20px; height: 20px; flex-shrink: 0; border-radius: 6px; background: #E0E7FF"></span>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+<span class="sk" style="height: 16px; width: 144px; max-width: 50%; border-radius: 20px; background: #D8DCE2"></span>
+<span class="sk" style="height: 14px; width: 100%; max-width: 284px; border-radius: 20px; background: #E8EAEE"></span>
+<span class="sk" style="height: 14px; width: 100%; max-width: 284px; border-radius: 20px; background: #E8EAEE"></span>
+</div>
+</div>
+</sc-for>
+</section>
+</sc-if>
+<sc-if value="{{open}}" hint-placeholder-val="{{ true }}">
+<section aria-label="建議回覆" style="flex-shrink: 0; border-top: 1px solid #E8EAEE; background: #EEF2FF; padding: 12px 20px; display: flex; flex-direction: column; gap: 8px">
+<div style="height: 24px; display: flex; align-items: center; gap: 8px">
+<span style="flex-grow: 1; font-size: 14px; line-height: 20px; font-weight: 700; color: #4F46E5">建議回覆</span>
+<button onClick="{{regenerate}}" style="height: 20px; display: flex; align-items: center; gap: 4px; padding: 0; background: transparent; border: none; border-radius: 4px; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"></path><path d="M20 4v5h-5"></path></svg><span style="font-size: 14px; line-height: 18px; font-weight: 500; color: #6366F1; border-bottom: 0.75px solid #6366F1">重新產生</span></button>
+<button aria-label="收起建議回覆" onClick="{{closePanel}}" style="width: 20px; height: 20px; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D343F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M17 7L7 17M7 7l10 10"></path></svg></button>
+</div>
+<sc-for list="{{sugg}}" as="s" hint-placeholder-count="3">
+<div style="background: #FEFEFE; border: 1px solid {{s.border}}; border-radius: 8px; padding: 8px 12px; display: flex; align-items: flex-start; gap: 8px">
+<span style="width: 20px; height: 20px; flex-shrink: 0; border-radius: 6px; background: #E0E7FF; color: #4338CA; font-family: 'Inter', sans-serif; font-size: 12px; line-height: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center">{{s.letter}}</span>
+<div style="flex-grow: 1; min-width: 0; display: flex; align-items: center; gap: 8px">
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; font-size: 12px; line-height: 16px">
+<div style="display: flex; align-items: center; gap: 6px"><span style="font-weight: 700; color: #2D343F; white-space: nowrap">{{s.label}}</span><sc-if value="{{s.isUsed}}" hint-placeholder-val="{{ false }}"><span style="font-size: 11px; color: #4338CA; background: #E0E7FF; padding: 0 6px; border-radius: 4px">已加入</span></sc-if></div>
+<div style="font-weight: 500; color: #5C6B80; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; max-height: 32px">{{s.flat}}</div>
+</div>
+<button aria-label="加入回覆 {{s.letter}} 到訊息框" onClick="{{s.use}}" style="height: 32px; flex-shrink: 0; box-sizing: border-box; padding: 7px 20px 7px 16px; display: flex; align-items: center; justify-content: center; gap: 4px; background: #FEFEFE; border: 1px solid #D8DCE2; border-radius: 4px; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444F5F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg><span style="font-size: 14px; line-height: 18px; font-weight: 500; color: #444F5F">加入</span></button>
+</div>
+</div>
+</sc-for>
+<sc-if value="{{hasSugInstr}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 6px"><span style="font-size: 12px; color: #3730A3; background: #ffffff; border: 1px solid #C7D2FE; padding: 1px 4px 1px 10px; border-radius: 12px; display: inline-flex; align-items: center; gap: 4px">已按指令：{{sugInstr}}<button aria-label="清除指令" onClick="{{clearSugInstr}}" style="width: 18px; height: 18px; padding: 0; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3730A3" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"></path></svg></button></span></div>
+</sc-if>
+<div style="display: flex; align-items: center">
+<button onClick="{{openSugCustom}}" style="height: 30px; padding: 0 12px 0 8px; display: flex; align-items: center; gap: 4px; box-sizing: border-box; border: 1px solid #C7D2FE; background: #ffffff; border-radius: 4px; cursor: pointer; flex-shrink: 0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17l6-6-6-6"></path><path d="M12 19h8"></path></svg><span style="font-size: 13px; font-weight: 700; color: #3730A3; white-space: nowrap">自訂指令</span></button>
+<span style="font-size: 12px; line-height: 16px; color: #5C6B80; margin-left: 8px">不合適？告訴 AI 要寫什麼，直接生成一個回覆</span>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{isCustom}}" hint-placeholder-val="{{ false }}">
+<section aria-label="自訂指令" style="flex-shrink: 0; border-top: 1px solid #E8EAEE; background: #EEF2FF; padding: 12px 20px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: center; gap: 8px">
+<label for="cmd-input" style="flex-grow: 1; font-size: 14px; line-height: 20px; font-weight: 700; color: #4F46E5">{{customLabel}}</label>
+<button aria-label="關閉自訂指令" onClick="{{closeCustom}}" style="width: 20px; height: 20px; flex-shrink: 0; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D343F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M17 7L7 17M7 7l10 10"></path></svg></button>
+</div>
+<div class="cmd-box" style="max-height: 260px; box-sizing: border-box; padding: 12px; display: flex; flex-direction: column; gap: 4px; border: 2px solid transparent; border-radius: 8px; background: linear-gradient(#FEFEFE, #FEFEFE) padding-box, linear-gradient(90deg, #A855F7, #6366F1 55%, #60A5FA) border-box; box-shadow: 0 10px 7.5px rgba(216,220,226,0.1), 0 4px 3px rgba(216,220,226,0.1)">
+<textarea id="cmd-input" class="cmd-ta" value="{{instr}}" onChange="{{onInstr}}" placeholder="{{customPh}}" rows="1" style="width: 100%; box-sizing: border-box; field-sizing: content; min-height: 20px; max-height: 184px; overflow-y: auto; padding: 0; font-size: 14px; line-height: 18px; color: #2D343F; background: transparent; border: none; outline: none; resize: none"></textarea>
+<div style="display: flex; justify-content: flex-end">
+<button aria-label="執行指令" onClick="{{runCustom}}" style="width: 28px; height: 28px; flex-shrink: 0; padding: 0; display: flex; align-items: center; justify-content: center; background: {{runBg}}; border: none; border-radius: 40px; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FEFEFE" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></button>
+</div>
+</div>
+</section>
+</sc-if>
+<sc-if value="{{hasMiddle}}" hint-placeholder-val="{{ false }}">
+<div aria-label="OmniAI 狀態" data-status-bar="1" style="flex-shrink: 0; border-top: 1px solid #E8EAEE; padding: 12px 20px; min-height: 48px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; background: #EEF2FF">
+<div aria-live="polite" style="flex-grow: 1; min-width: 0; display: flex; align-items: center; gap: 8px">
+<sc-if value="{{sugUndone}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; line-height: 20px; font-weight: 700; color: #4F46E5; white-space: nowrap">建議回覆</span></sc-if>
+<sc-if value="{{showCollapsed}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 14px; line-height: 20px; font-weight: 700; color: #4F46E5; white-space: nowrap">建議回覆</span>
+<sc-if value="{{hasUsed}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; line-height: 16px; font-weight: 400; color: #4338CA; background: #FEFEFE; border: 1px solid #E0E7FF; padding: 4px 8px; border-radius: 12px; white-space: nowrap">已加入建議回覆 {{usedLetter}}</span></sc-if>
+</sc-if>
+<sc-if value="{{hasPending}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; font-weight: 700; color: #3730A3">{{pendingText}}</span></sc-if>
+<sc-if value="{{hiddenGen}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; font-weight: 700; color: #3730A3; white-space: nowrap">建議回覆</span><span style="font-size: 12px; color: #3730A3; background: #ffffff; border: 1px solid #C7D2FE; padding: 1px 10px; border-radius: 12px; white-space: nowrap">AI 正在思考…</span></sc-if>
+<sc-if value="{{showStatusLine}}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{busy}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; font-weight: 700; color: #3730A3; white-space: nowrap">{{busyOpLabel}}</span><span style="font-size: 12px; color: #3730A3; background: #ffffff; border: 1px solid #C7D2FE; padding: 1px 10px; border-radius: 12px; white-space: nowrap">AI 正在思考…</span></sc-if>
+<sc-if value="{{hasStatus}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; line-height: 20px; font-weight: 700; color: #4F46E5; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis" title="{{statusTitle}}">{{statusTitle}}</span><sc-if value="{{statusChip}}" hint-placeholder-val="{{ true }}"><span style="font-size: 12px; color: #3730A3; background: #ffffff; border: 1px solid #C7D2FE; padding: 1px 10px; border-radius: 12px; white-space: nowrap; flex-shrink: 0">已執行指令</span></sc-if></sc-if>
+</sc-if>
+</div>
+<sc-if value="{{sugUndone}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 14px; line-height: 18px; font-weight: 500; color: #5C6B80; white-space: nowrap; flex-shrink: 0">已復原</span>
+<button aria-label="關閉" onClick="{{dismissSuggest}}" style="width: 20px; height: 20px; flex-shrink: 0; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D343F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M17 7L7 17M7 7l10 10"></path></svg></button>
+</sc-if>
+<sc-if value="{{showCollapsed}}" hint-placeholder-val="{{ false }}">
+<button onClick="{{undoSuggest}}" style="height: 20px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; padding: 0; background: transparent; border: none; border-radius: 4px; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"></path></svg><span style="font-size: 14px; line-height: 18px; font-weight: 500; color: #6366F1; border-bottom: 0.75px solid #6366F1">復原</span></button>
+<button aria-label="關閉" onClick="{{dismissSuggest}}" style="width: 20px; height: 20px; flex-shrink: 0; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D343F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M17 7L7 17M7 7l10 10"></path></svg></button>
+</sc-if>
+<sc-if value="{{hasPending}}" hint-placeholder-val="{{ false }}">
+<button onClick="{{discardPending}}" style="height: 28px; flex-shrink: 0; padding: 0 8px; font-size: 12px; color: #3730A3; background: transparent; border: none; cursor: pointer; border-radius: 4px">捨棄</button>
+<button onClick="{{applyPending}}" style="height: 28px; flex-shrink: 0; padding: 0 12px; font-size: 12px; font-weight: 500; color: #ffffff; background: #6366F1; border: none; cursor: pointer; border-radius: 4px">套用</button>
+</sc-if>
+<sc-if value="{{barUndo}}" hint-placeholder-val="{{ false }}">
+<button onClick="{{undo}}" style="height: 20px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; padding: 0; background: transparent; border: none; border-radius: 4px; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"></path></svg><span style="font-size: 14px; line-height: 18px; font-weight: 500; color: #6366F1; border-bottom: 0.75px solid #6366F1">復原</span></button>
+</sc-if>
+<sc-if value="{{statusUndone}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; line-height: 18px; font-weight: 500; color: #5C6B80; white-space: nowrap; flex-shrink: 0">已復原</span></sc-if>
+<sc-if value="{{statusClosable}}" hint-placeholder-val="{{ false }}">
+<button aria-label="關閉" onClick="{{dismissStatus}}" style="width: 20px; height: 20px; flex-shrink: 0; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D343F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M17 7L7 17M7 7l10 10"></path></svg></button>
+</sc-if>
+</div>
+</sc-if>
+<div style="flex-shrink: 0; border-top: 1px solid #E8EAEE; padding: 5px 20px; min-height: 40px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; background-color: #ffffff; opacity: {{busyDim}}; pointer-events: {{busyPE}}">
+<sc-if value="{{noDraft}}" hint-placeholder-val="{{ true }}">
+<div style="position: relative; flex-shrink: 0">
+<button aria-label="{{aiBtnLabel}}" aria-haspopup="{{aiPopup}}" aria-expanded="{{menuStr}}" aria-disabled="{{aiDisabledStr}}" aria-describedby="omniai-tip" onClick="{{aiBtnClick}}" onMouseEnter="{{tipOn}}" onMouseLeave="{{tipOff}}" onFocus="{{tipOn}}" onBlur="{{tipOff}}" style="height: 30px; padding: 0 12px 0 8px; gap: 4px; box-sizing: border-box; border: 1px solid {{aiBd}}; background: {{aiBtnBg}}; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: {{aiCursor}}; opacity: {{aiOpacity}}">
+<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6.5l1.6 4.4 4.4 1.6-4.4 1.6-1.6 4.4-1.6-4.4-4.4-1.6 4.4-1.6z" fill="#6366F1"></path><path d="M17 2.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" fill="#A5B4FC"></path><path d="M18 14.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z" fill="#6366F1"></path></svg><span style="font-size: 13px; font-weight: 700; color: #3730A3">{{aiBtnLabel}}</span></button>
+<sc-if value="{{showTip}}" hint-placeholder-val="{{ false }}">
+<div id="omniai-tip" role="tooltip" style="position: absolute; left: 0; bottom: 38px; z-index: 11; width: max-content; max-width: 240px; background: #37404C; color: #ffffff; border-radius: 8px; padding: 8px 12px; display: flex; flex-direction: column; gap: 2px; box-shadow: 0 4px 12px rgba(45,52,63,0.2); pointer-events: none">
+<span style="font-size: 12px; font-weight: 700">{{aiBtnLabel}}</span>
+<span style="font-size: 11px; color: #D8DCE2">{{tipText}}</span>
+<span style="position: absolute; left: 14px; bottom: -5px; width: 10px; height: 10px; background: #37404C; transform: rotate(45deg)"></span>
+</div>
+</sc-if>
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}">
+<div role="menu" aria-label="OmniAI" style="position: absolute; left: 0; bottom: 38px; width: 288px; background: #ffffff; border: 1px solid #D8DCE2; border-radius: 12px; box-shadow: 0 8px 24px rgba(45,52,63,0.14); padding: 6px; display: flex; flex-direction: column; gap: 8px; z-index: 10">
+<div style="font-size: 11px; font-weight: 700; color: #5C6B80; padding: 6px 12px 4px">OmniAI</div>
+<sc-if value="{{noDraft}}" hint-placeholder-val="{{ true }}">
+<button role="menuitem" onClick="{{runSuggest}}" style="width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: transparent; border: none; border-radius: 8px; cursor: pointer; text-align: left; font-size: 13px; color: #505D6F">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"></path><path d="M12 8.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"></path></svg>
+<span style="display: flex; flex-direction: column; gap: 1px"><span style="font-weight: 500">建議回覆</span><span style="font-size: 11px; color: #5C6B80">依對話內容生成 3 個回覆</span></span></button>
+</sc-if>
+<sc-if value="{{hasDraftMenu}}" hint-placeholder-val="{{ false }}">
+<button role="menuitem" onClick="{{runPolish}}" aria-disabled="{{editDisabled}}" style="width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: transparent; border: none; border-radius: 8px; cursor: {{editCursor}}; opacity: {{editOpacity}}; text-align: left; font-size: 13px; color: #505D6F">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4l5 5L9 20H4v-5z"></path><path d="M13 6l5 5"></path></svg>
+<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 1px"><span style="font-weight: 500">潤飾</span><span style="font-size: 11px; color: #5C6B80">更親切、修正錯字、精簡內容</span></span></button>
+<button role="menuitem" onClick="{{openCustom}}" style="width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: transparent; border: none; border-radius: 8px; cursor: pointer; text-align: left; font-size: 13px; color: #505D6F">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6-6-6"></path><path d="M12 19h8"></path></svg>
+<span style="display: flex; flex-direction: column; gap: 1px"><span style="font-weight: 500">自訂指令</span><span style="font-size: 11px; color: #5C6B80">告訴 AI 怎麼改寫訊息框內容</span></span></button>
+<button role="menuitem" onClick="{{runTranslate}}" aria-disabled="{{editDisabled}}" style="width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: transparent; border: none; border-radius: 8px; cursor: {{editCursor}}; opacity: {{editOpacity}}; text-align: left; font-size: 13px; color: #505D6F">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h9M8.5 3v2M6 5c.5 3 2.5 5.5 5 7"></path><path d="M11 5c-.5 3-3 6-6 7.5"></path><path d="M13 21l4-9 4 9M14.5 18h5"></path></svg>
+<span style="display: flex; flex-direction: column; gap: 1px"><span style="font-weight: 500">翻譯成客人語言</span><span style="font-size: 11px; color: #5C6B80">偵測到：{{detectLang}}</span></span></button>
+</sc-if>
+</div>
+</sc-if>
+</div>
+</sc-if>
+<sc-if value="{{hasDraftMenu}}" hint-placeholder-val="{{ false }}">
+<div role="group" aria-label="OmniAI" style="display: flex; align-items: center; gap: 6px; flex-shrink: 0">
+<div style="position: relative; flex-shrink: 0">
+<button aria-haspopup="menu" aria-expanded="{{polStr}}" onClick="{{togglePolishMenu}}" style="height: 30px; padding: 0 8px 0 8px; display: flex; align-items: center; gap: 5px; box-sizing: border-box; border: 1px solid {{polBd}}; background: {{polBg}}; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; color: #3730A3; flex-shrink: 0; white-space: nowrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4l5 5L9 20H4v-5z"></path><path d="M13 6l5 5"></path></svg>潤飾<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3730A3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{polChevron}}"></path></svg></button>
+<sc-if value="{{polishMenuOpen}}" hint-placeholder-val="{{ false }}">
+<div role="menu" aria-label="潤飾方式" style="position: absolute; left: 0; bottom: 38px; width: 280px; background: #ffffff; border: 1px solid #D8DCE2; border-radius: 12px; box-shadow: 0 8px 24px rgba(45,52,63,0.14); padding: 6px; display: flex; flex-direction: column; gap: 2px; z-index: 10">
+<sc-for list="{{polishChips}}" as="pc" hint-placeholder-count="5">
+<button role="menuitem" onClick="{{pc.run}}" class="m-row" style="width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 8px 12px; background: transparent; border: none; border-radius: 8px; cursor: pointer; text-align: left">
+<span style="font-size: 13px; font-weight: 500; color: #444F5F">{{pc.label}}</span><span style="font-size: 11px; color: #5C6B80">{{pc.desc}}</span></button>
+</sc-for>
+</div>
+</sc-if>
+</div>
+<button onClick="{{runTranslate}}" title="翻譯成客人語言（偵測到：{{detectLang}}）" style="height: 30px; padding: 0 10px 0 8px; display: flex; align-items: center; gap: 5px; box-sizing: border-box; border: 1px solid #C7D2FE; background: #ffffff; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; color: #3730A3; flex-shrink: 0; white-space: nowrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h9M8.5 3v2M6 5c.5 3 2.5 5.5 5 7"></path><path d="M11 5c-.5 3-3 6-6 7.5"></path><path d="M13 21l4-9 4 9M14.5 18h5"></path></svg>翻譯</button>
+</div>
+</sc-if>
+<sc-if value="{{hasDraftMenu}}" hint-placeholder-val="{{ false }}">
+<div style="flex-grow: 1"></div>
+<div style="position: relative; flex-shrink: 0">
+<button aria-haspopup="menu" aria-expanded="{{moreStr}}" onClick="{{toggleMore}}" style="height: 30px; padding: 0 10px 0 8px; display: flex; align-items: center; gap: 5px; box-sizing: border-box; border: 1px solid {{moreBd}}; background: {{moreBg}}; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; color: #3730A3; flex-shrink: 0; white-space: nowrap"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.8" fill="#6366F1"></circle><circle cx="12" cy="12" r="1.8" fill="#6366F1"></circle><circle cx="19" cy="12" r="1.8" fill="#6366F1"></circle></svg>更多</button>
+<sc-if value="{{moreOpen}}" hint-placeholder-val="{{ false }}">
+<div role="menu" aria-label="更多 OmniAI 功能" style="position: absolute; right: 0; bottom: 38px; width: 260px; background: #ffffff; border: 1px solid #D8DCE2; border-radius: 12px; box-shadow: 0 8px 24px rgba(45,52,63,0.14); padding: 6px; display: flex; flex-direction: column; gap: 8px; z-index: 10">
+<div style="font-size: 11px; font-weight: 700; color: #5C6B80; padding: 6px 12px 0">更多 OmniAI 功能</div>
+<button role="menuitem" onClick="{{moreCustom}}" style="width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: transparent; border: none; border-radius: 8px; cursor: pointer; text-align: left; font-size: 13px; color: #505D6F">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17l6-6-6-6"></path><path d="M12 19h8"></path></svg>
+<span style="display: flex; flex-direction: column; gap: 1px"><span style="font-weight: 500">自訂指令</span><span style="font-size: 11px; color: #5C6B80">告訴 AI 怎麼改寫訊息框內容</span></span></button>
+</div>
+</sc-if>
+</div>
+</sc-if>
+</div>
+<!-- Composer -->
+<div style="flex-shrink: 0; border-top: 1px solid #E8EAEE; padding: 10px 20px 12px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: stretch; gap: 10px">
+<label for="composer" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">輸入訊息</label>
+<textarea id="composer" data-keep-status="1" placeholder="輸入訊息" value="{{draft}}" onChange="{{onDraft}}" rows="{{draftRows}}" style="flex-grow: 1; box-sizing: border-box; field-sizing: content; min-height: 40px; max-height: 300px; overflow-y: auto; font-size: 15px; line-height: 24px; padding: 8px 0; border: none; outline: none; resize: none; color: #505D6F; background: transparent; opacity: {{busyDim}}"></textarea>
+<button aria-label="送出" onClick="{{send}}" style="align-self: flex-end; flex-shrink: 0; width: 40px; height: 40px; border: none; background: transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="{{sendBg}}" stroke="none"><path d="M3 3.5l19 8.5-19 8.5 2.8-8.5z"></path></svg></button>
+</div>
+<div style="display: flex; gap: 8px; align-items: center">
+<button aria-label="新增" style="width: 40px; height: 40px; border: none; background: #E8EAEE; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#444F5F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v12M6 12h12"></path></svg></button>
+<button aria-label="表情符號" style="width: 40px; height: 40px; border: none; background: transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#444F5F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M8.5 14.5s1.3 1.8 3.5 1.8 3.5-1.8 3.5-1.8"></path><path d="M9 9.5h.01M15 9.5h.01"></path></svg></button>
+<button aria-label="貼圖" style="width: 40px; height: 40px; border: none; background: transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#444F5F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9"></path><path d="M12 3a9 9 0 0 1 9 9h-5a4 4 0 0 1-4-4z"></path></svg></button>
+<div style="width: 1px; height: 24px; background: #E8EAEE; margin: 0 4px"></div>
+<button aria-label="優惠券" style="width: 40px; height: 40px; border: none; background: transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#444F5F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16a1 1 0 0 1 1 1v3a2 2 0 0 0 0 4v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a2 2 0 0 0 0-4V7a1 1 0 0 1 1-1z"></path><path d="M12 8v1M12 11.5v1M12 15v1"></path></svg></button>
+<button aria-label="購物車" style="width: 40px; height: 40px; border: none; background: transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#444F5F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5h2l2 10h9"></path><circle cx="8" cy="19" r="1"></circle><circle cx="14" cy="19" r="1"></circle><path d="M11 4h10v11h-8"></path><path d="M14 8h4M14 11h4"></path></svg></button>
+<button aria-label="知識庫" style="width: 40px; height: 40px; border: none; background: transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#444F5F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3z"></path><path d="M21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z"></path></svg></button>
+<button aria-label="WhatsApp" style="width: 40px; height: 40px; border: none; background: transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#444F5F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 20.5l1.3-4.2A9 9 0 1 1 8 19.4z"></path><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.5-2-1-1 1a4 4 0 0 1-2.5-2.5l1-1-1-2z"></path></svg></button>
+<button aria-label="商品" style="width: 40px; height: 40px; border: none; background: transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#444F5F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><path d="M9 8a3 3 0 0 0 6 0"></path></svg></button>
+<button aria-label="訂單查詢" style="width: 40px; height: 40px; border: none; background: transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#444F5F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h6"></path><path d="M4 8h16"></path><circle cx="16" cy="16" r="3"></circle><path d="M18.2 18.2L21 21"></path></svg></button>
+<button aria-label="變數" style="height: 40px; padding: 0 6px; border: none; background: transparent; border-radius: 8px; font-size: 16px; font-weight: 700; color: #444F5F; cursor: pointer">{…}</button>
+</div>
+</div>
+</main>
+
+<!-- Customer panel -->
+<aside aria-label="顧客資料" style="width: 320px; flex-shrink: 0; border-left: 1px solid #E8EAEE; display: flex; flex-direction: column; background: #ffffff; min-height: 0">
+<div style="flex-grow: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column">
+<div style="display: flex; padding: 0 16px; border-bottom: 1px solid #E8EAEE">
+<div style="flex: 1; text-align: center; padding: 14px 0 12px; font-size: 16px; font-weight: 700; color: #444F5F; border-bottom: 2px solid #6366F1">顧客資料</div>
+<div style="flex: 1; text-align: center; padding: 14px 0 12px; font-size: 16px; font-weight: 500; color: #444F5F; display: flex; align-items: center; justify-content: center; gap: 6px">討論串<span style="font-size: 11px; background: #E8EAEE; color: #444F5F; border-radius: 10px; padding: 1px 7px">0</span></div>
+</div>
+<div style="padding: 6px 16px 0; display: flex; flex-direction: column">
+<div style="display: flex; gap: 14px; align-items: flex-start">
+<div style="width: 22px; flex-shrink: 0; padding-top: 14px; display: flex; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9AA5B4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"></path></svg></div>
+<div style="flex-grow: 1; min-width: 0; border-bottom: 1px solid #E8EAEE; padding: 10px 0; display: flex; align-items: flex-start; gap: 8px; min-height: 28px">
+<div style="flex-grow: 1; min-width: 0; font-size: 14px; color: #505D6F; line-height: 1.5"><div style="display: flex; flex-direction: column; gap: 6px"><span>Arlene</span>
+<span style="display: flex; align-items: center; gap: 6px; background: #E8EAEE; border-radius: 6px; padding: 5px 8px; font-size: 13px"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z" fill="#505D6F"></path><path d="M9 8c0 3.3 2.7 6.5 6.5 7l1-1.5-2-1-1 1a4 4 0 0 1-2.5-2.5l1-1-1-2z" fill="#ffffff"></path></svg>艾倫</span></div></div><button aria-label="編輯姓名" style="width: 32px; height: 32px; flex-shrink: 0; border: none; background: transparent; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h3.5L18.2 9.3l-3.5-3.5L4 16.5z" fill="#6366F1"></path><path d="M16 4.5l3.5 3.5 1.2-1.2a1.5 1.5 0 0 0 0-2.1l-1.4-1.4a1.5 1.5 0 0 0-2.1 0z" fill="#6366F1"></path></svg></button>
+</div>
+</div><div style="display: flex; gap: 14px; align-items: flex-start">
+<div style="width: 22px; flex-shrink: 0; padding-top: 14px; display: flex; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9AA5B4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 20.5l1.3-4.2A9 9 0 1 1 8 19.4z"></path><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.5-2-1-1 1a4 4 0 0 1-2.5-2.5l1-1-1-2z"></path></svg></div>
+<div style="flex-grow: 1; min-width: 0; border-bottom: 1px solid #E8EAEE; padding: 10px 0; display: flex; align-items: center; gap: 8px; min-height: 28px">
+<div style="flex-grow: 1; min-width: 0; font-size: 14px; color: #505D6F; line-height: 1.5">W.1671617017382207</div>
+</div>
+</div><div style="display: flex; gap: 14px; align-items: flex-start">
+<div style="width: 22px; flex-shrink: 0; padding-top: 14px; display: flex; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9AA5B4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="8.5" cy="12" r="2"></circle><path d="M13 10h5M13 14h5"></path></svg></div>
+<div style="flex-grow: 1; min-width: 0; border-bottom: 1px solid #E8EAEE; padding: 10px 0; display: flex; align-items: center; gap: 8px; min-height: 28px">
+<div style="flex-grow: 1; min-width: 0; font-size: 14px; color: #505D6F; line-height: 1.5">ID22739</div>
+</div>
+</div><div style="display: flex; gap: 14px; align-items: flex-start">
+<div style="width: 22px; flex-shrink: 0; padding-top: 14px; display: flex; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9AA5B4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg></div>
+<div style="flex-grow: 1; min-width: 0; border-bottom: 1px solid #E8EAEE; padding: 10px 0; display: flex; align-items: flex-start; gap: 8px; min-height: 28px">
+<div style="flex-grow: 1; min-width: 0; font-size: 14px; color: #505D6F; line-height: 1.5">4140 Parker Rd. Allentown, New Mexico 31134</div>
+</div>
+</div><div style="display: flex; gap: 14px; align-items: flex-start">
+<div style="width: 22px; flex-shrink: 0; padding-top: 14px; display: flex; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9AA5B4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5l8.5 6.5 8.5-6.5"></path></svg></div>
+<div style="flex-grow: 1; min-width: 0; border-bottom: 1px solid #E8EAEE; padding: 10px 0; display: flex; align-items: center; gap: 8px; min-height: 28px">
+<div style="flex-grow: 1; min-width: 0; font-size: 14px; color: #505D6F; line-height: 1.5">abc@omnichat.ai</div><button aria-label="編輯電郵" style="width: 32px; height: 32px; flex-shrink: 0; border: none; background: transparent; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h3.5L18.2 9.3l-3.5-3.5L4 16.5z" fill="#6366F1"></path><path d="M16 4.5l3.5 3.5 1.2-1.2a1.5 1.5 0 0 0 0-2.1l-1.4-1.4a1.5 1.5 0 0 0-2.1 0z" fill="#6366F1"></path></svg></button>
+</div>
+</div><div style="display: flex; gap: 14px; align-items: flex-start">
+<div style="width: 22px; flex-shrink: 0; padding-top: 14px; display: flex; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9AA5B4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"></path></svg></div>
+<div style="flex-grow: 1; min-width: 0; border-bottom: 1px solid #E8EAEE; padding: 10px 0; display: flex; align-items: center; gap: 8px; min-height: 28px">
+<div style="flex-grow: 1; min-width: 0; font-size: 14px; color: #505D6F; line-height: 1.5">+1234567890</div>
+</div>
+</div><div style="display: flex; gap: 14px; align-items: flex-start">
+<div style="width: 22px; flex-shrink: 0; padding-top: 14px; display: flex; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9AA5B4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-6"></path><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></div>
+<div style="flex-grow: 1; min-width: 0; border-bottom: 1px solid #E8EAEE; padding: 10px 0; display: flex; align-items: flex-start; gap: 8px; min-height: 28px">
+<div style="flex-grow: 1; min-width: 0; font-size: 14px; color: #505D6F; line-height: 1.5"><div style="display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line">{{noteText}}</div></div><button aria-label="編輯備註" onClick="{{openNote}}" style="width: 32px; height: 32px; flex-shrink: 0; border: none; background: transparent; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h3.5L18.2 9.3l-3.5-3.5L4 16.5z" fill="#6366F1"></path><path d="M16 4.5l3.5 3.5 1.2-1.2a1.5 1.5 0 0 0 0-2.1l-1.4-1.4a1.5 1.5 0 0 0-2.1 0z" fill="#6366F1"></path></svg></button>
+</div>
+</div><div style="display: flex; gap: 14px; align-items: flex-start">
+<div style="width: 22px; flex-shrink: 0; padding-top: 14px; display: flex; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9AA5B4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"></path><circle cx="7.5" cy="7.5" r="1.3"></circle></svg></div>
+<div style="flex-grow: 1; min-width: 0; border-bottom: 1px solid #E8EAEE; padding: 10px 0; display: flex; align-items: center; gap: 8px; min-height: 28px">
+<div style="flex-grow: 1; min-width: 0; font-size: 14px; color: #505D6F; line-height: 1.5"><div style="display: flex; align-items: center; gap: 10px"><span style="flex-grow: 1; color: #64748B">貼上標籤</span><span style="width: 1px; height: 20px; background: #E8EAEE"></span><a href="#" style="font-size: 14px; color: #6366F1; text-decoration: underline; font-weight: 500">標籤頻次</a></div></div>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 32px 36px"><span style="display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 4px 0 12px; border-radius: 13px; background: #6366F1; color: #ffffff; font-size: 13px">標籤<button aria-label="移除標籤 標籤" style="width: 18px; height: 18px; border: none; padding: 0; background: transparent; cursor: pointer; display: flex"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#ffffff"></circle><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="#6366F1" stroke-width="2.2" stroke-linecap="round"></path></svg></button></span><span style="display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 4px 0 12px; border-radius: 13px; background: #6366F1; color: #ffffff; font-size: 13px">這個標籤<button aria-label="移除標籤 這個標籤" style="width: 18px; height: 18px; border: none; padding: 0; background: transparent; cursor: pointer; display: flex"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#ffffff"></circle><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="#6366F1" stroke-width="2.2" stroke-linecap="round"></path></svg></button></span><span style="display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 4px 0 12px; border-radius: 13px; background: #6366F1; color: #ffffff; font-size: 13px">測試標籤<button aria-label="移除標籤 測試標籤" style="width: 18px; height: 18px; border: none; padding: 0; background: transparent; cursor: pointer; display: flex"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#ffffff"></circle><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="#6366F1" stroke-width="2.2" stroke-linecap="round"></path></svg></button></span></div>
+</div>
+<div style="height: 16px; background: #E8EAEE; flex-shrink: 0"></div>
+<div style="padding: 0 16px">
+<div style="display: flex; gap: 14px; align-items: flex-start">
+<div style="width: 22px; flex-shrink: 0; padding-top: 12px; display: flex; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9AA5B4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M10 16.5V7.5h3a2.5 2.5 0 0 1 0 5h-3"></path></svg></div>
+<div style="flex-grow: 1; border-bottom: 1px solid #E8EAEE; padding: 12px 0; display: flex; flex-direction: column; gap: 6px"><span style="font-size: 12px; color: #5C6B80">累積點數</span><span style="font-size: 15px; color: #505D6F">1,500</span></div>
+</div>
+<div style="display: flex; gap: 14px; align-items: flex-start">
+<div style="width: 22px; flex-shrink: 0; padding-top: 12px; display: flex; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9AA5B4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M10 16.5V7.5h3a2.5 2.5 0 0 1 0 5h-3"></path></svg></div>
+<div style="flex-grow: 1;  padding: 12px 0; display: flex; flex-direction: column; gap: 6px"><span style="font-size: 12px; color: #5C6B80">點數餘額</span><span style="font-size: 15px; color: #505D6F">1,000</span></div>
+</div>
+</div>
+<div style="height: 16px; background: #E8EAEE; flex-shrink: 0"></div>
+<div style="display: flex; padding: 0 16px; flex-shrink: 0">
+<div style="flex: 1; text-align: center; padding: 14px 0 10px; font-size: 16px; font-weight: 500; color: #505D6F; border-bottom: 2px solid #6366F1">Customer Profile</div>
+<div style="flex: 1; text-align: center; padding: 14px 0 10px; font-size: 16px; color: #444F5F">Order History</div>
+</div>
+</div>
+</aside>
+</div>
+</div>
+
+<sc-if value="{{noteOpen}}" hint-placeholder-val="{{ false }}">
+<div aria-hidden="true" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(45,52,63,0.4); z-index: 40"></div>
+<div role="dialog" aria-modal="true" aria-labelledby="note-title" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 41; width: 640px; box-sizing: border-box; background: #ffffff; border-radius: 8px; box-shadow: 0 16px 40px rgba(45,52,63,0.24); padding: 32px 36px 28px; display: flex; flex-direction: column; gap: 14px">
+<div id="note-title" style="font-size: 24px; font-weight: 500; color: #444F5F; margin-bottom: 12px">編輯備註</div>
+<label for="note-input" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">備註</label>
+<textarea id="note-input" class="note-ta" placeholder="請輸入備註" value="{{noteDraft}}" onChange="{{onNoteDraft}}" rows="8" style="width: 100%; box-sizing: border-box; min-height: 200px; max-height: 340px; padding: 10px 14px; font-size: 14px; line-height: 1.6; color: #505D6F; background: #F7F8F9; border: 1px solid #9AA5B4; border-radius: 4px; resize: vertical; outline: none; opacity: {{taOpacity}}"></textarea>
+<div style="display: flex; align-items: center; gap: 12px">
+<button onClick="{{runNoteAI}}" aria-disabled="{{noteAiDisabled}}" style="height: 36px; padding: 0 14px 0 10px; display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: #3730A3; background: #ffffff; border: 1px solid #C7D2FE; border-radius: 4px; cursor: {{noteAiCursor}}; opacity: {{noteAiOpacity}}"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6.5l1.6 4.4 4.4 1.6-4.4 1.6-1.6 4.4-1.6-4.4-4.4-1.6 4.4-1.6z" fill="#6366F1"></path><path d="M17 2.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" fill="#A5B4FC"></path><path d="M18 14.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z" fill="#6366F1"></path></svg>AI 生成對話摘要</button>
+<span style="font-size: 12px; color: #64748B">{{noteAiHint}}</span>
+</div>
+<sc-if value="{{noteGen}}" hint-placeholder-val="{{ false }}">
+<div aria-live="polite" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #E0E7FF; border-radius: 6px">
+<span class="spin" style="width: 14px; height: 14px; border: 2px solid #C7D2FE; border-top-color: #6366F1; border-radius: 50%; flex-shrink: 0"></span>
+<span style="font-size: 13px; color: #3730A3"><b>AI 正在生成對話摘要…</b>　範圍：本次對話 {{rangeShort}} 起，最多最近 {{capN}} 則</span>
+</div>
+</sc-if>
+<sc-if value="{{hasNoteInfo}}" hint-placeholder-val="{{ false }}">
+<div aria-live="polite" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #E0E7FF; border-radius: 6px">
+<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6.5l1.6 4.4 4.4 1.6-4.4 1.6-1.6 4.4-1.6-4.4-4.4-1.6 4.4-1.6z" fill="#6366F1"></path><path d="M17 2.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" fill="#A5B4FC"></path><path d="M18 14.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z" fill="#6366F1"></path></svg>
+<span style="font-size: 13px; line-height: 1.5; color: #3730A3; flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><b>{{noteInfoTitle}}</b><span>涵蓋 {{infoRange}} 起 / {{infoCount}} 則訊息{{infoCap}}　·　產生於 {{infoAt}}</span></span>
+<sc-if value="{{canUndoNote}}" hint-placeholder-val="{{ true }}"><button onClick="{{undoNoteAI}}" style="height: 28px; padding: 0 4px; font-size: 13px; color: #3730A3; background: transparent; border: none; text-decoration: underline; cursor: pointer; flex-shrink: 0">復原</button></sc-if>
+</div>
+</sc-if>
+<sc-if value="{{noteConfirm}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: #F7F8F9; border: 1px solid #D8DCE2; border-radius: 6px">
+<span style="font-size: 13px; color: #444F5F; flex-grow: 1">AI 仍在生成摘要，關閉後結果將無法保留。</span>
+<button onClick="{{closeNoteForce}}" style="height: 32px; padding: 0 12px; font-size: 13px; color: #444F5F; background: #ffffff; border: 1px solid #D8DCE2; border-radius: 4px; cursor: pointer">仍要關閉</button>
+<button onClick="{{keepNote}}" style="height: 32px; padding: 0 12px; font-size: 13px; font-weight: 500; color: #ffffff; background: #6366F1; border: none; border-radius: 4px; cursor: pointer">繼續等待</button>
+</div>
+</sc-if>
+<div style="display: flex; justify-content: flex-end; gap: 16px; margin-top: 14px">
+<button onClick="{{cancelNote}}" style="width: 160px; height: 38px; font-size: 15px; font-weight: 500; color: #444F5F; background: #ffffff; border: 1px solid #D8DCE2; border-radius: 4px; cursor: pointer">取消</button>
+<button onClick="{{saveNote}}" aria-disabled="{{saveDisabled}}" style="width: 160px; height: 38px; font-size: 15px; font-weight: 500; color: {{saveFg}}; background: {{saveBg}}; border: none; border-radius: 4px; cursor: {{saveCursor}}">儲存</button>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{hasConfirm}}" hint-placeholder-val="{{ false }}">
+<div aria-hidden="true" onClick="{{stay}}" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(45,52,63,0.4); z-index: 40"></div>
+<div role="alertdialog" aria-modal="true" aria-labelledby="leave-title" aria-describedby="leave-desc" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 41; width: 400px; box-sizing: border-box; background: #ffffff; border-radius: 12px; box-shadow: 0 16px 40px rgba(45,52,63,0.24); padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div id="leave-title" style="font-size: 17px; font-weight: 700; color: #444F5F">AI 仍在生成{{confirmKind}}</div>
+<div id="leave-desc" style="font-size: 14px; line-height: 1.6; color: #505D6F">{{confirmBody}}</div>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #505D6F; cursor: pointer; margin-top: 4px"><input type="checkbox" checked="{{dontAsk}}" onChange="{{toggleDontAsk}}" style="width: 16px; height: 16px; accent-color: #6366F1; margin: 0">不再提示</label>
+<div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px">
+<button onClick="{{leave}}" style="height: 36px; padding: 0 16px; font-size: 14px; font-weight: 500; color: #444F5F; background: #ffffff; border: 1px solid #D8DCE2; border-radius: 4px; cursor: pointer">仍要離開</button>
+<button autofocus="" onClick="{{stay}}" style="height: 36px; padding: 0 16px; font-size: 14px; font-weight: 500; color: #ffffff; background: #6366F1; border: none; border-radius: 4px; cursor: pointer">留下等待</button>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div role="status" aria-live="polite" style="position: absolute; left: 832px; bottom: 150px; transform: translateX(-50%); z-index: 30; max-width: 520px; display: flex; align-items: center; gap: 14px; padding: 10px 12px 10px 16px; background: #37404C; color: #ffffff; border-radius: 8px; box-shadow: 0 8px 24px rgba(45,52,63,0.24); font-size: 13px">
+<span>{{toastText}}</span>
+<a href="#" onClick="{{toastBack}}" style="color: #A5B4FC; font-weight: 600; text-decoration: underline; white-space: nowrap">{{toastAction}}</a>
+<button aria-label="關閉提示" onClick="{{toastClose}}" style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; padding: 0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D8DCE2" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"></path></svg></button>
+</div>
+</sc-if>
+<sc-if value="{{overlayOn}}" hint-placeholder-val="{{ false }}">
+<div aria-hidden="true" onClick="{{closeMenu}}" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 9; background: transparent"></div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+var SETS = [
+  [
+    { label: '有貨，可寄香港', body: '您好！這款首飾目前有現貨，可以寄往香港 😊\n\n運費為 [HK$XX]，下單後約 [X] 個工作天內寄出。如需協助下單，歡迎隨時告訴我們！' },
+    { label: '有貨，附運費及送達時間', body: '您好！感謝您的查詢 💛\n\n這款首飾目前有現貨，我們可以寄往香港：\n・運費：[HK$XX]（滿 [HK$XXX] 免運）\n・寄送時間：下單後約 [X] 個工作天寄出，一般 [X–X] 天送達\n・包裝：附精美禮盒，適合送禮\n\n如想了解尺寸、材質或保養方式，歡迎隨時詢問！' },
+    { label: '有貨，庫存不多，可傳下單連結', body: '您好！好消息，這款首飾目前有現貨，也可以寄往香港 ✨\n\n這款是近期的人氣款，庫存不多，建議喜歡的話可以儘早下單。現在下單約 [X] 個工作天內寄出，運費 [HK$XX]。\n\n需要我們傳送下單連結給您嗎？' }
+  ],
+  [
+    { label: '有貨，可寄香港，歡迎下單', body: '您好！這款首飾有現貨喔，香港地區可以寄送 😊 運費 [HK$XX]，約 [X] 個工作天寄出。有任何問題都可以問我們！' },
+    { label: '有貨，說明寄送方式', body: '您好！這款首飾目前有現貨，可寄往香港。\n\n我們提供 [寄送方式，例如順豐速運]，下單後約 [X] 個工作天寄出，運費 [HK$XX]。訂單寄出後會提供追蹤編號給您。' },
+    { label: '有貨，推薦搭配款式', body: '您好！這款首飾目前有現貨，也可以寄往香港 💛\n\n如果您喜歡這款，[搭配款式名稱] 和它很搭，一起購買滿 [HK$XXX] 還可享免運。需要我們傳送兩款的連結給您嗎？' }
+  ]
+];
+var LETTERS = ['A', 'B', 'C'];
+var CHATS = [
+  { id: 'gs', name: 'Glennie Styer', initials: 'GS', color: '#4338CA', msg: 'このジュエリーはまだ在庫がありますか？香港への発送は可能ですか？', lang: 'ja', badge: true },
+  { id: 'dd', name: 'Di Diffendal', initials: 'DD', color: '#5C6B80', msg: '您好，請問有存貨嗎？我想買兩件。', lang: 'zh', badge: true },
+  { id: 'mm', name: 'Marcelle Meltzner', initials: 'MM', color: '#6366F1', msg: '您好，請問有存貨嗎？我想今天下單。', lang: 'zh', badge: true },
+  { id: 'vt', name: 'Val Trundy', initials: 'VT', color: '#444F5F', msg: '您好', lang: 'zh', badge: false },
+  { id: 'dm', name: 'Davoud Mackins', initials: 'DM', color: '#312E81', msg: '您好', lang: 'zh', badge: false },
+  { id: 'mr', name: 'Marta Richbourg', initials: 'MR', color: '#505D6F', msg: '您好', lang: 'zh', badge: false },
+  { id: 'hx', name: 'Hy Xander', initials: 'HX', color: '#3730A3', msg: '您好，請問有存貨嗎？我想送給朋友。', lang: 'zh', badge: true }
+];
+var NOTE0 = '頻繁退貨，以下是退貨紀錄：\n退貨日期：2023年5月10日 退貨原因：尺寸不合適 退貨產品：產品編號：SKU12345，尺寸：M\n退貨日期：2023年4月20日 退貨原因：顏色與網站圖片不符 退貨產品：產品編號：SKU67890';
+function summarize(chat, sent, v) {
+  var ask = chat.lang === 'ja' ? '詢問首飾是否還有貨、能否寄往香港（客人使用日文）' : chat.msg.replace(/^您好，?/, '');
+  var last = sent.length ? sent[sent.length - 1].text.replace(/\s+/g, ' ') : '';
+  if (last.length > 46) last = last.slice(0, 46) + '…';
+  if (v % 2 === 0) {
+    return '【AI 對話摘要・2026/10/09】\n・客人查詢：' + ask + '\n・客服回覆：' + (last || '尚未回覆') + '\n・待跟進：' + (sent.length ? '確認客人是否下單及寄送地址' : '回覆庫存及寄送資訊');
+  }
+  return '【AI 對話摘要・2026/10/09】\n客人' + ask + '。' + (sent.length ? '客服已回覆有現貨及寄送安排，待客人確認下單。' : '客服尚未回覆，需提供庫存、運費及寄送時間。');
+}
+var OPEN_AT = '2026/10/09 14:53', CAP = 200;
+function pad(n) { return (n < 10 ? '0' : '') + n; }
+function fmtAt(sent) { var m = 53 + 3 + sent.length * 3, h = 14 + Math.floor(m / 60); m = m % 60; return '2026/10/09 ' + pad(h) + ':' + pad(m); }
+function msgCount(chat, sent) { return (chat.id === 'gs' ? 2 : 1) + sent.length; }
+function summaryText(chat, sent, at) {
+  var n = msgCount(chat, sent);
+  var body = summarize(chat, sent, 0).split('\n').slice(1).join('\n');
+  return '【AI 對話摘要】' + at + '｜涵蓋 ' + OPEN_AT + ' 起・' + Math.min(n, CAP) + ' 則訊息' + (n > CAP ? '（最近 ' + CAP + ' 則）' : '') + '\n' + body;
+}
+function appendNote(draft, text) { var base = draft.replace(/\s+$/, ''); return base ? base + '\n\n' + text : text; }
+function applyInstr(t, q) {
+  if (!q) return t;
+  if (q.indexOf('廣東話') >= 0) return CANTO;
+  if (q.indexOf('正式') >= 0) return toFormal(t);
+  if (q.indexOf('親切') >= 0) return toFriendly(t);
+  if (q.indexOf('精簡') >= 0 || q.indexOf('簡短') >= 0) return toConcise(t);
+  if (q.indexOf('免運') >= 0) return t + '\n\n另外，現在全單滿 [HK$XXX] 即享免運優惠！';
+  if (q.indexOf('感謝') >= 0) return t + '\n\n感謝您一直以來的支持！';
+  return t + '\n\n[AI 依指令「' + q + '」調整的內容]';
+}
+function toDetailed(t) { return t.replace(/\s+$/, '') + '\n\n如需了解尺寸、材質、保養方式或寄送安排，歡迎隨時詢問，我們很樂意為您詳細說明。'; }
+function fixTypos(t) { return t.replace(/己經/g, '已經').replace(/在庫/g, '庫存').replace(/寄去/g, '寄往').replace(/工作日/g, '工作天'); }
+function chatOf(id) { return CHATS.filter(function (c) { return c.id === id; })[0] || CHATS[0]; }
+var AGENTS = [
+{
+"id": "cs-0",
+"group": "客服 Agent",
+"name": "客服 Agent",
+"desc": "",
+"initial": "",
+"color": ""
+},
+{
+"id": "cs-1",
+"group": "客服 Agent",
+"name": "床墊世界 Agent",
+"desc": "",
+"initial": "",
+"color": ""
+},
+{
+"id": "cs-2",
+"group": "客服 Agent",
+"name": "Rita 檔案應用客服 Agent",
+"desc": "",
+"initial": "",
+"color": ""
+},
+{
+"id": "cs-3",
+"group": "客服 Agent",
+"name": "Rita 0727 客服 Agent",
+"desc": "",
+"initial": "",
+"color": ""
+},
+{
+"id": "cs-4",
+"group": "客服 Agent",
+"name": "bob test AI Chat | Reply 1st inquiry when Omni AI chat starts",
+"desc": "",
+"initial": "",
+"color": ""
+},
+{
+"id": "cs-5",
+"group": "客服 Agent",
+"name": "專業按揭顧問",
+"desc": "",
+"initial": "",
+"color": ""
+},
+{
+"id": "sales-0",
+"group": "銷售 Agent",
+"name": "Luka_新商品推薦 Agent 1（包含產品目錄、知識文件）",
+"desc": "",
+"initial": "",
+"color": ""
+},
+{
+"id": "sales-1",
+"group": "銷售 Agent",
+"name": "Luka_新商品推薦 Agent 2（僅有產品目錄）",
+"desc": "",
+"initial": "",
+"color": ""
+},
+{
+"id": "sales-2",
+"group": "銷售 Agent",
+"name": "Luka_新商品推薦 Agent 3（僅知識文件）",
+"desc": "",
+"initial": "",
+"color": ""
+},
+{
+"id": "sales-3",
+"group": "銷售 Agent",
+"name": "Adrian_DR_REBORN",
+"desc": "",
+"initial": "",
+"color": ""
+},
+{
+"id": "sales-4",
+"group": "銷售 Agent",
+"name": "Adrian-fortress-apple",
+"desc": "",
+"initial": "",
+"color": ""
+}
+];
+var EN = {
+  '0-0': 'Hi! This item is currently in stock and can be shipped to Hong Kong 😊\n\nShipping is [HK$XX], and orders are dispatched within about [X] business days. Let us know anytime if you need help placing an order!',
+  '0-1': 'Hi! Thanks for reaching out 💛\n\nThis item is in stock and we can ship it to Hong Kong:\n・Shipping: [HK$XX] (free over [HK$XXX])\n・Delivery: dispatched in about [X] business days, usually arrives in [X–X] days\n・Packaging: comes in a gift box, perfect as a present\n\nFeel free to ask about sizing, materials or care anytime!',
+  '0-2': 'Hi! Good news: this item is in stock and ships to Hong Kong ✨\n\nIt is one of our popular pieces and stock is limited, so we suggest ordering soon. Orders ship within about [X] business days; shipping is [HK$XX].\n\nWould you like us to send you the order link?',
+  '1-0': 'Hi! This item is in stock and we can ship to Hong Kong 😊 Shipping is [HK$XX], dispatched in about [X] business days. Feel free to ask us anything!',
+  '1-1': 'Hi! This item is in stock and can be shipped to Hong Kong.\n\nWe ship via [shipping method], dispatched within about [X] business days, shipping [HK$XX]. We will send you a tracking number once it ships.',
+  '1-2': 'Hi! This item is in stock and ships to Hong Kong 💛\n\nIf you like it, [matching item] pairs beautifully with it, and orders over [HK$XXX] ship free. Would you like links to both?'
+};
+var JA = {
+  '0-0': 'こんにちは！こちらのジュエリーは現在在庫がございます。香港への発送も可能です😊\n\n送料は[HK$XX]で、ご注文後約[X]営業日以内に発送いたします。ご注文のお手伝いが必要でしたら、お気軽にお知らせください！',
+  '0-1': 'こんにちは！お問い合わせありがとうございます💛\n\nこちらのジュエリーは現在在庫がございます。香港への発送も承っております：\n・送料：[HK$XX]（[HK$XXX]以上で送料無料）\n・お届け：ご注文後約[X]営業日以内に発送、通常[X–X]日でお届け\n・ラッピング：ギフトボックス付きで、贈り物にも最適です\n\nサイズや素材、お手入れ方法についても、お気軽にお問い合わせください！',
+  '0-2': 'こんにちは！うれしいお知らせです。こちらのジュエリーは現在在庫があり、香港への発送も可能です✨\n\n最近人気の商品で在庫が残りわずかのため、お早めのご注文をおすすめします。ご注文後約[X]営業日以内に発送、送料は[HK$XX]です。\n\nご注文用のリンクをお送りしましょうか？',
+  '1-0': 'こんにちは！こちらのジュエリーは在庫がございます。香港への発送も可能です😊 送料は[HK$XX]、約[X]営業日で発送いたします。ご不明な点はお気軽にどうぞ！',
+  '1-1': 'こんにちは！こちらのジュエリーは現在在庫があり、香港へ発送可能です。\n\n[配送方法]にてお届けし、ご注文後約[X]営業日以内に発送、送料は[HK$XX]です。発送後に追跡番号をお知らせいたします。',
+  '1-2': 'こんにちは！こちらのジュエリーは在庫があり、香港への発送も可能です💛\n\n[おすすめ商品名]との組み合わせもおすすめで、[HK$XXX]以上のご購入で送料無料になります。両方のリンクをお送りしましょうか？'
+};
+var ZH_JA = [
+  ['感謝您的查詢', 'お問い合わせありがとうございます'], ['感謝您的支持', 'いつもご愛顧いただきありがとうございます'],
+  ['歡迎隨時告訴我們', 'お気軽にお知らせください'], ['歡迎隨時詢問', 'お気軽にお問い合わせください'], ['有任何問題', 'ご不明な点がございましたら'],
+  ['請稍等', '少々お待ちください'], ['請問', '恐れ入りますが、'], ['不好意思', '申し訳ございません'], ['抱歉', '申し訳ございません'],
+  ['這款首飾', 'こちらのジュエリー'], ['這款', 'こちらの商品'], ['首飾', 'ジュエリー'], ['商品', '商品'],
+  ['目前有現貨', '現在在庫がございます'], ['有現貨', '在庫がございます'], ['有貨', '在庫がございます'], ['缺貨', '在庫切れ'], ['沒有貨', '在庫がございません'], ['補貨', '再入荷'],
+  ['可以寄往香港', '香港への発送が可能です'], ['可寄往香港', '香港への発送が可能です'], ['寄往香港', '香港へ発送'], ['寄往', '発送先：'], ['寄出', '発送'], ['送達', 'お届け'],
+  ['運費', '送料'], ['免運', '送料無料'], ['下單', 'ご注文'], ['訂單', 'ご注文'], ['工作天', '営業日'], ['優惠', '特典'], ['折扣', '割引'], ['連結', 'リンク'],
+  ['尺寸', 'サイズ'], ['材質', '素材'], ['顏色', 'カラー'], ['價錢', '価格'], ['價格', '価格'], ['禮盒', 'ギフトボックス'],
+  ['謝謝', 'ありがとうございます'], ['感謝', 'ありがとうございます'], ['您好', 'こんにちは'], ['你好', 'こんにちは'],
+  ['我們', '私どもは'], ['可以', '可能です'], ['需要', '必要'], ['大約', '約'], ['約', '約'], ['天', '日'], ['嗎', 'か'],
+  ['您', 'お客様'], ['你', 'お客様'], ['，', '、']
+];
+function toJA(t) {
+  var out = '', i = 0;
+  while (i < t.length) {
+    var hit = null;
+    for (var k = 0; k < ZH_JA.length; k++) { var z = ZH_JA[k][0]; if (t.substr(i, z.length) === z && (!hit || z.length > hit[0].length)) hit = ZH_JA[k]; }
+    if (hit) { out += hit[1]; i += hit[0].length; } else { out += t[i]; i++; }
+  }
+  return out;
+}
+var CANTO = '你好！呢款首飾而家有現貨，可以寄去香港㗎 😊\n\n運費 [HK$XX]，落單後大約 [X] 個工作天寄出。有咩需要隨時搵我哋啦！';
+function stripEmoji(t) { return t.replace(/[\u{1F300}-\u{1FAFF}\u2728]\uFE0F?/gu, '').replace(/ +\n/g, '\n').replace(/ +$/g, ''); }
+function toFormal(t) { return stripEmoji(t).replace(/^您好！/, '您好，').replace(/喔/g, '').replace(/歡迎隨時告訴我們！|歡迎隨時詢問！|都可以問我們！/g, '歡迎隨時與我們聯絡。'); }
+function toFriendly(t) { var r = t.replace(/^您好！/, '您好呀！'); return /[\u{1F300}-\u{1FAFF}\u2728]/u.test(r) ? r : r + ' 😊'; }
+function toConcise(t) {
+  var p = t.split(/\n\n+/);
+  if (p.length > 2) return p[0] + '\n\n' + p[p.length - 1];
+  return p.join(' ').replace(/如需協助下單，/, '');
+}
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.tok = 0; this.toastTimer = null;
+    this.state = { polishOpen: false, moreOpen: false, sugInstr: '', sugInstrDraft: '', refineOp: null, lastAiOp: null, notePreview: null, noteCache: {}, noteInfo: null, noteText: NOTE0, noteOpen: false, noteDraft: '', noteGen: false, noteResult: null, noteVar: 0, notePrev: null, noteConfirm: false, confirm: null, dontAsk: false, chat: 'gs', drafts: {}, sentBy: {}, toast: null, bg: {}, pending: null, genHidden: false, agent: 'cs-0', agentOpen: false, lastOp: null, set: 0, edits: {}, editing: null, editText: '', draft: '', open: false, gen: false, generating: false, used: null, sent: [], tool: null, menu: false, polishSub: false, msgTrans: false, tip: false, busy: false, status: null, prev: null, instr: '', lang: 'zh-HK' };
+  }
+  aiApply(fn, label) {
+    var self = this;
+    var chatId = this.state.chat;
+    var op = label.indexOf('潤飾') >= 0 ? '潤飾' : (label.indexOf('翻譯') >= 0 || label.indexOf('客人語言') >= 0 ? '翻譯' : '自訂指令');
+    this.setState({ lastAiOp: op, busy: true, busyOp: op, busyLabel: label, status: null, menu: false, polishSub: false, lastOp: 'ai', open: false, pending: null });
+    setTimeout(function () {
+      if (self.state.chat === chatId) {
+        self.setState(function (st) {
+          var next = fn(st.draft);
+          return { prev: st.draft, draft: next, busy: false, status: label, tool: st.tool === 'custom' ? null : st.tool };
+        });
+      }
+      // user left this chat: the result cannot be kept, so it is dropped
+    }, 2000);
+  }
+  finishSuggest(chatId) {
+    if (this.state.chat === chatId) {
+      this.setState(function (st) { return { generating: false, open: !st.genHidden, gen: true, genHidden: false }; });
+    }
+    // user left this chat: the result cannot be kept, so it is dropped
+  }
+  notify(back, text, action) {
+    var self = this;
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+    this.setState({ toast: { text: text, back: back, action: action } });
+    this.toastTimer = setTimeout(function () { self.setState({ toast: null }); }, 4000);
+  }
+  genNote() {
+    var st = this.state;
+    if (st.noteGen) return;
+    var self = this, chat = chatOf(st.chat), sent = st.sent, count = msgCount(chat, sent), cache = st.noteCache[st.chat];
+    if (cache && cache.count === count) {
+      if (st.noteDraft.indexOf(cache.text) >= 0) return; // 已是最新摘要：不重算、不重扣
+      this.setState({ notePrev: st.noteDraft, noteDraft: appendNote(st.noteDraft, cache.text), noteInfo: { count: count, at: cache.at, reused: true } });
+      return;
+    }
+    var tk = (this.noteTok = (this.noteTok || 0) + 1);
+    this.setState({ noteGen: true, noteInfo: null, notePreview: null });
+    setTimeout(function () {
+      if (self.noteTok !== tk || !self.state.noteOpen) return;
+      var at = fmtAt(sent), text = summaryText(chat, sent, at);
+      var nc = Object.assign({}, self.state.noteCache); nc[chat.id] = { count: count, text: text, at: at };
+      self.setState(function (s2) { return { noteGen: false, noteConfirm: false, noteCache: nc, notePrev: s2.noteDraft, noteDraft: appendNote(s2.noteDraft, text), noteInfo: { count: count, at: at, reused: false } }; });
+    }, 2000);
+  }
+  closeNote() { this.noteTok = (this.noteTok || 0) + 1; this.setState({ notePreview: null, noteOpen: false, noteGen: false, noteInfo: null, notePrev: null, noteConfirm: false }); }
+  switchChat(id, force) {
+    var st = this.state;
+    if (id === st.chat) return;
+    if (!force && (st.generating || st.busy) && !st.dontAsk) {
+      this.setState({ confirm: { target: id, kind: st.generating ? '建議回覆' : (st.busyOp || 'AI 操作') }, menu: false, agentOpen: false });
+      return;
+    }
+    var drafts = Object.assign({}, st.drafts); drafts[st.chat] = st.draft;
+    var sentBy = Object.assign({}, st.sentBy); sentBy[st.chat] = st.sent;
+    this.setState({ chat: id, drafts: drafts, sentBy: sentBy, draft: drafts[id] || '', sent: sentBy[id] || [], open: false, gen: false, generating: false, genHidden: false, busy: false, status: null, prev: null, tool: null, lastOp: null, used: null, pending: null, menu: false, agentOpen: false, msgTrans: false, instr: '', editing: null, confirm: null, toast: null, bg: {}, sugInstr: '', sugInstrDraft: '', refineOp: null });
+  }
+  runInstr(instr) {
+    var q = (instr || '').trim();
+    if (!q) return;
+    var op = this.state.refineOp;
+    this.aiApply(function (t) { return applyInstr(t, q); }, op ? '已依指令調整' + op + '結果' : '已依指令調整');
+    this.setState({ instr: '', refineOp: null });
+  }
+  runSuggestNow() { var v = this.renderVals(); v.runSuggest(); }
+  renderVals() {
+    var s = this.state;
+    var cur = AGENTS.filter(function (a) { return a.id === s.agent; })[0] || AGENTS[0];
+    var cchat = chatOf(s.chat), count = msgCount(cchat, s.sent), cache = s.noteCache[s.chat];
+    var noteState = s.noteGen ? 'gen' : (cache && cache.count === count && s.noteDraft.indexOf(cache.text) >= 0 ? 'latest' : 'ok');
+    var self = this;
+    var sugg = SETS[s.set].map(function (x, i) {
+      var id = s.set + '-' + i;
+      var text = applyInstr(s.edits[id] != null ? s.edits[id] : x.body, s.sugInstr);
+      var isEditing = s.editing === id;
+      var isUsed = s.used === id;
+      return {
+        label: x.label,
+        letter: LETTERS[i],
+        flat: text.replace(/\n+/g, ' '),
+        isEditing: isEditing,
+        notEditing: !isEditing,
+        edited: s.edits[id] != null,
+        isUsed: isUsed,
+        border: isEditing || isUsed ? '#6366F1' : '#E8EAEE',
+        use: function () { self.setState({ sugPrev: self.state.draft, lastOp: 'suggest', draft: text, used: id, open: false, tool: null, menu: false, status: null, prev: null }); },
+        edit: function () { self.setState({ editing: id, editText: text }); },
+        cancel: function () { self.setState({ editing: null }); },
+        save: function () {
+          self.setState(function (st) {
+            var e = Object.assign({}, st.edits); e[id] = st.editText;
+            return { edits: e, editing: null };
+          });
+        },
+        saveUse: function () {
+          self.setState(function (st) {
+            var e = Object.assign({}, st.edits); e[id] = st.editText;
+            return { edits: e, editing: null, draft: st.editText, used: id };
+          });
+        }
+      };
+    });
+    var usedLetter = s.used ? LETTERS[Number(s.used.split('-')[1])] : '';
+    var lines = s.draft ? s.draft.split('\n').length : 1;
+    return {
+      convos: CHATS.map(function (c) {
+        var cur = c.id === s.chat;
+        return { name: c.name, initials: c.initials, color: c.color, preview: c.msg, hasBadge: c.badge, bg: cur ? '#D8DCE2' : '#ffffff', cur: cur ? 'true' : 'false',
+          pick: function () { self.switchChat(c.id); },
+          hasAi: !!(s.bg[c.id] && !s.bg[c.id].seen), aiLabel: s.bg[c.id] && s.bg[c.id].done ? 'AI 已完成' : '生成中…', aiFg: s.bg[c.id] && s.bg[c.id].done ? '#3730A3' : '#5C6B80', aiBg: s.bg[c.id] && s.bg[c.id].done ? '#E0E7FF' : '#ffffff' };
+      }),
+      chatName: chatOf(s.chat).name,
+      isJa: chatOf(s.chat).lang === 'ja',
+      detectLang: chatOf(s.chat).lang === 'ja' ? '日本語' : '繁體中文',
+      hasToast: !!s.toast, toastText: s.toast ? s.toast.text : '', toastAction: s.toast ? s.toast.action || '返回' : '',
+      toastBack: function (e) { if (e && e.preventDefault) e.preventDefault(); var b = self.state.toast && self.state.toast.back; self.setState({ toast: null }); if (b) self.switchChat(b); },
+      toastClose: function () { self.setState({ toast: null }); },
+      noteText: s.noteText, noteOpen: s.noteOpen, noteDraft: s.noteDraft,
+      openNote: function () { var st0 = self.state, ch0 = chatOf(st0.chat), c0 = st0.noteCache[st0.chat], n0 = msgCount(ch0, st0.sent); var latest = c0 && c0.count === n0 && st0.noteText.indexOf(c0.text) >= 0; self.setState({ notePreview: null, noteOpen: true, noteDraft: st0.noteText, noteGen: false, noteInfo: latest ? { count: c0.count, at: c0.at, reused: false, latestOnOpen: true } : null, notePrev: null, noteConfirm: false, menu: false, agentOpen: false }); },
+      onNoteDraft: function (e) { if (self.state.noteGen) return; self.setState({ noteDraft: e.target.value, notePrev: null }); },
+      noteGen: s.noteGen, taOpacity: s.noteGen ? 0.6 : 1,
+      noteAiDisabled: noteState === 'ok' ? 'false' : 'true', noteAiCursor: noteState === 'ok' ? 'pointer' : 'default', noteAiOpacity: noteState === 'ok' ? 1 : 0.5,
+      noteAiHint: noteState === 'gen' ? '' : noteState === 'preview' ? '請先加入或捨棄預覽中的摘要' : (noteState === 'latest' ? '' : (cache && cache.count === count ? '對話沒有新訊息，將重新加入上次的摘要' : '')),
+      rangeShort: OPEN_AT.slice(5), capN: CAP,
+      hasPreview: !!s.notePreview && !s.noteGen,
+      previewTitle: s.notePreview ? (s.notePreview.reused ? 'AI 對話摘要（預覽 · 上次的結果，未扣 credits）' : 'AI 對話摘要（預覽）') : '',
+      previewText: s.notePreview ? s.notePreview.text : '', pvAt: s.notePreview ? s.notePreview.at : '',
+      pvCount: s.notePreview ? Math.min(s.notePreview.count, CAP) : 0, pvCap: s.notePreview && s.notePreview.count > CAP ? '（最近 ' + CAP + ' 則）' : '',
+      discardPreview: function () { self.setState({ notePreview: null }); },
+      addPreview: function () { self.setState(function (st) { var pv = st.notePreview; if (!pv) return {}; return { notePrev: st.noteDraft, noteDraft: appendNote(st.noteDraft, pv.text), noteInfo: { count: pv.count, at: pv.at, reused: pv.reused }, notePreview: null }; }); },
+      hasNoteInfo: !!s.noteInfo && !s.noteGen,
+      noteInfoTitle: s.noteInfo ? (s.noteInfo.latestOnOpen ? '已加入最新 AI 摘要（對話沒有新訊息）' : (s.noteInfo.reused ? '已加入上次的摘要' : '已加入 AI 摘要')) : '',
+      infoRange: OPEN_AT.slice(5), infoCount: s.noteInfo ? Math.min(s.noteInfo.count, CAP) : 0, infoCap: s.noteInfo && s.noteInfo.count > CAP ? '（只摘要最近 ' + CAP + ' 則）' : '', infoAt: s.noteInfo ? s.noteInfo.at : '',
+      canUndoNote: s.notePrev != null,
+      runNoteAI: function () { self.genNote(); },
+      undoNoteAI: function () { self.setState(function (st) { return { noteDraft: st.notePrev, notePrev: null, noteInfo: null }; }); },
+      noteConfirm: s.noteConfirm,
+      cancelNote: function () { if (self.state.noteGen) { self.setState({ noteConfirm: true }); return; } self.closeNote(); },
+      closeNoteForce: function () { self.closeNote(); },
+      keepNote: function () { self.setState({ noteConfirm: false }); },
+      saveDisabled: (s.noteDraft !== s.noteText && !s.noteGen) ? 'false' : 'true',
+      saveBg: (s.noteDraft !== s.noteText && !s.noteGen) ? '#6366F1' : '#E8EAEE', saveFg: (s.noteDraft !== s.noteText && !s.noteGen) ? '#ffffff' : '#9AA5B4', saveCursor: (s.noteDraft !== s.noteText && !s.noteGen) ? 'pointer' : 'default',
+      saveNote: function () { var st = self.state; if (st.noteDraft === st.noteText || st.noteGen) return; self.setState({ noteText: st.noteDraft }); self.closeNote(); },
+      sugInstr: s.sugInstr, sugInstrDraft: s.sugInstrDraft, hasSugInstr: !!s.sugInstr,
+      onSugInstr: function (e) { self.setState({ sugInstrDraft: e.target.value }); },
+      sugRunBg: s.sugInstrDraft.trim() ? '#6366F1' : '#A5B4FC',
+      runSugInstr: function () {
+        var q = self.state.sugInstrDraft.trim(); if (!q) return;
+        var chatId = self.state.chat;
+        self.setState({ sugInstr: q, sugInstrDraft: '', generating: true, genHidden: false, open: false, used: null });
+        setTimeout(function () { if (self.state.chat !== chatId) return; self.setState({ generating: false, open: true, gen: true }); }, 1800);
+      },
+      clearSugInstr: function () { self.setState({ sugInstr: '' }); },
+      canRefine: s.lastOp === 'ai' && !s.busy && !!s.status && s.tool !== 'custom' && !!s.draft.trim(),
+      openRefine: function () { self.setState({ tool: 'custom', refineOp: self.state.lastAiOp === '自訂指令' ? null : self.state.lastAiOp, instr: '', menu: false }); },
+      customLabel: s.refineOp ? '調整' + s.refineOp + '結果' : '自訂指令',
+      customPh: s.customMode === 'sug' ? '告訴AI要寫什麼，例如：加入免運優惠、語氣更正式' : '告訴AI要寫什麼或怎樣修改訊息內容',
+      hasDraftMenu: !!s.draft.trim(),
+      rootDown: function () {},
+      openSugCustom: function () { self.setState({ tool: 'custom', customMode: 'sug', open: false, instr: '', refineOp: null }); },
+      undoSuggest: function () { self.setState(function (st) { return { draft: st.sugPrev || '', used: null, open: false, lastOp: 'sugUndone', sugPrev: null }; }); },
+      sugUndone: s.lastOp === 'sugUndone',
+      dismissSuggest: function () { self.setState({ lastOp: null }); },
+      statusTitle: (function (t) { if (!t) return ''; if (t.indexOf('已潤飾：') === 0) return '潤飾：' + t.slice(4); if (t.indexOf('已翻譯成') === 0) return '翻譯'; if (t.indexOf('已依指令調整') === 0) return '自訂指令' + (t.length > 6 ? '：' + t.slice(6) : ''); if (t === '已復原') return s.undoneOp || 'OmniAI'; return t; })(s.status),
+      statusChip: !!s.status && s.status !== '已復原',
+      statusUndone: s.lastOp === 'ai' && s.status === '已復原',
+      statusClosable: s.lastOp === 'ai' && !s.busy && !!s.status,
+      dismissStatus: function () { self.setState({ status: null, lastOp: null, prev: null }); },
+      polishMenuOpen: s.polishOpen && !!s.draft.trim(), polStr: s.polishOpen ? 'true' : 'false',
+      polBg: s.polishOpen ? '#E0E7FF' : '#ffffff', polBd: s.polishOpen ? '#6366F1' : '#C7D2FE',
+      polChevron: s.polishOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6',
+      togglePolishMenu: function () { self.setState(function (st) { return { polishOpen: !st.polishOpen, moreOpen: false, menu: false, tip: false }; }); },
+      polishChips: [
+        { label: '更精簡', fn: toConcise, desc: '只保留重點' }, { label: '更詳細', fn: toDetailed, desc: '補充尺寸、材質或寄送等資訊' }, { label: '更親切', fn: toFriendly, desc: '語氣溫暖，加入適量表情符號' },
+        { label: '更正式', fn: toFormal, desc: '拿掉表情符號，用正式用語' }, { label: '修正文字', fn: fixTypos, desc: '修正錯別字及標點' }
+      ].map(function (o) { return { label: o.label, desc: o.desc, run: function () { if (!self.state.draft.trim()) return; self.setState({ polishOpen: false }); self.aiApply(o.fn, '已潤飾：' + o.label); } }; }),
+      busyOpLabel: s.busyOp || 'OmniAI',
+      busyDim: (s.busy || s.generating) ? 0.5 : 1, busyPE: (s.busy || s.generating) ? 'none' : 'auto',
+      moreOpen: s.moreOpen && !!s.draft.trim(), moreStr: s.moreOpen ? 'true' : 'false',
+      moreBg: s.moreOpen ? '#E0E7FF' : '#ffffff', moreBd: s.moreOpen ? '#6366F1' : '#C7D2FE',
+      toggleMore: function () { self.setState(function (st) { return { polishOpen: false, moreOpen: !st.moreOpen, menu: false, tip: false }; }); },
+      moreCustom: function () { self.setState({ moreOpen: false }); self.renderVals().openCustom(); },
+      hasConfirm: !!s.confirm,
+      confirmKind: s.confirm ? (s.confirm.kind === '建議回覆' ? '建議回覆' : s.confirm.kind + '結果') : '',
+      confirmBody: s.confirm ? (s.confirm.kind === '建議回覆' ? '離開後建議回覆將無法保留，已使用的 credit 不會退回。' : '離開後' + s.confirm.kind + '結果將無法保留，訊息內容不會變更；已使用的 credit 不會退回。') : '',
+      dontAsk: s.dontAsk,
+      toggleDontAsk: function (e) { self.setState({ dontAsk: !!(e && e.target && e.target.checked) }); },
+      stay: function () { self.setState({ confirm: null, dontAsk: false }); },
+      leave: function () { var t = self.state.confirm && self.state.confirm.target; if (t) self.switchChat(t, true); },
+      sugg: sugg,
+      open: s.open,
+      openStr: s.open ? 'true' : 'false',
+      aiBg: s.open ? '#EEF2FF' : '#ffffff',
+      aiFg: '#4338CA',
+      editText: s.editText,
+      onEditText: function (e) { self.setState({ editText: e.target.value }); },
+      draft: s.draft,
+      draftRows: Math.min(Math.max(s.draft.split('\n').reduce(function (n, ln) {
+        var w = 0; for (var c = 0; c < ln.length; c++) { w += ln.charCodeAt(c) > 255 ? 1 : 0.55; }
+        return n + Math.max(1, Math.ceil(w / 28));
+      }, 0), 1), 12),
+      onDraft: function (e) {
+        var v = e.target.value;
+        self.setState(function (st) {
+          var next = { draft: v };
+          var done = (st.lastOp === 'ai' && !st.busy && st.status) || st.lastOp === 'sugUndone' || (st.lastOp === 'suggest' && st.gen && !st.open && !st.generating);
+          if (done) { next.lastOp = null; next.status = null; next.prev = null; }
+          if (v.trim() && st.open) { next.open = false; next.editing = null; }
+          
+          return next;
+        });
+      },
+      hasUsed: !!s.used,
+      usedLetter: usedLetter,
+      sendBg: s.draft ? '#6366F1' : '#B9C0CB',
+      showCollapsed: s.lastOp === 'suggest' && s.gen && !s.open && !s.generating && s.sent.length === 0,
+      generating: s.generating && !s.genHidden,
+      hasMiddle: s.tool !== 'custom' && (s.lastOp === 'sugUndone' || (s.lastOp === 'suggest' && s.gen && !s.open && !s.generating && s.sent.length === 0) || (s.lastOp === 'ai' && (s.busy || !!s.status)) || !!s.pending || (s.generating && s.genHidden)),
+      hasPending: !!s.pending, pendingText: s.pending ? s.pending.op + '已完成，要套用到訊息框嗎？' : '', hiddenGen: s.generating && s.genHidden,
+      applyPending: function () { var pd = self.state.pending; if (!pd) return; self.setState(function (st) { return { prev: st.draft, draft: pd.result, pending: null, lastOp: 'ai', status: pd.label }; }); },
+      discardPending: function () { self.setState({ pending: null, lastOp: null }); },
+      hideGen: function () { self.setState({ genHidden: true }); },
+      barHint: !(s.lastOp === 'suggest' && s.gen && !s.open && !s.generating && s.sent.length === 0) && !(s.lastOp === 'ai' && (s.busy || !!s.status)),
+      skeletons: [{ w1: '38%', w2: '86%' }, { w1: '46%', w2: '78%' }, { w1: '42%', w2: '82%' }],
+      sent: s.sent,
+      showTools: !!s.used && !!s.draft,
+      busy: s.busy,
+      hasStatus: !s.busy && !!s.status,
+      status: s.status,
+      canUndo: !s.busy && s.prev != null,
+      undo: function () { self.setState(function (st) { return { draft: st.prev, prev: null, status: '已復原', undoneOp: st.lastAiOp || 'OmniAI' }; }); },
+      isCustom: s.tool === 'custom' && !s.busy,
+      msgTrans: s.msgTrans, msgTransStr: s.msgTrans ? 'true' : 'false',
+      msgTransLabel: s.msgTrans ? '顯示原文' : '翻譯',
+      msgText: chatOf(s.chat).lang === 'ja' ? (s.msgTrans ? '這款首飾還有貨嗎？能寄往香港嗎？' : chatOf(s.chat).msg) : chatOf(s.chat).msg,
+      msgLang: s.msgTrans ? 'zh-Hant' : 'ja',
+      toggleMsgTrans: function () { self.setState(function (st) { return { msgTrans: !st.msgTrans }; }); },
+      barUndo: s.lastOp === 'ai' && !s.busy && s.prev != null,
+      showStatusLine: s.lastOp === 'ai' && (s.busy || !!s.status),
+      menuOpen: s.menu, menuStr: s.menu ? 'true' : 'false',
+      aiBtnBg: s.menu ? '#E0E7FF' : '#ffffff',
+      aiBd: s.menu ? '#6366F1' : '#C7D2FE',
+      aiDisabledStr: 'false',
+      aiTitle: !!s.draft.trim() ? 'OmniAI' : '輸入文字或加入 AI 建議回覆後即可使用',
+      aiCursor: 'pointer',
+      aiOpacity: 1,
+      noDraft: !s.draft.trim(),
+      editOpacity: s.draft.trim() ? 1 : 0.4,
+      editCursor: s.draft.trim() ? 'pointer' : 'default',
+      editDisabled: s.draft.trim() ? 'false' : 'true',
+      showTip: s.tip && !s.menu,
+      tipText: s.draft.trim() ? '潤飾、自訂指令、翻譯成客人語言' : '依對話內容生成 3 個建議回覆',
+      aiBtnLabel: s.draft.trim() ? 'OmniAI' : '建議回覆',
+      aiPopup: s.draft.trim() ? 'menu' : 'false',
+      aiBtnClick: function () { if (self.state.draft.trim()) { self.setState(function (st) { return { menu: !st.menu, polishSub: false, agentOpen: false, tip: false }; }); } else { self.setState({ menu: false, tip: false }); self.runSuggestNow(); } },
+      tipOn: function () { self.setState({ tip: true }); },
+      tipOff: function () { self.setState({ tip: false }); },
+      runSuggest: function () {
+        if (self.state.generating) return;
+        var again = self.state.gen;
+        self.setState(function (st) { return { menu: false, polishSub: false, generating: true, genHidden: false, open: false, editing: null, lastOp: 'suggest', pending: null, sugInstr: '', sugInstrDraft: '', tool: null, status: null, set: again ? 1 - st.set : (st.agent.indexOf('sales') === 0 ? 1 : 0), agentOpen: false }; });
+        var chatId = self.state.chat;
+        setTimeout(function () { self.finishSuggest(chatId); }, 3000);
+      },
+      closeMenu: function () { self.setState({ polishOpen: false, moreOpen: false, menu: false, polishSub: false, agentOpen: false }); },
+      agentName: cur.name, agentDesc: cur.desc, agentInitial: cur.initial, agentBg: cur.color,
+      agentOpen: s.agentOpen, agentOpenStr: s.agentOpen ? 'true' : 'false',
+      agentRowBg: s.agentOpen ? '#E0E7FF' : 'transparent',
+      agentBd: s.agentOpen ? '#6366F1' : '#C7D2FE',
+      overlayOn: s.menu || s.agentOpen || s.moreOpen || s.polishOpen,
+      agentChevron: s.agentOpen ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6',
+      goStudio: function (e) { if (e && e.preventDefault) e.preventDefault(); self.setState({ agentOpen: false }); },
+      toggleAgent: function () { self.setState(function (st) { return { agentOpen: !st.agentOpen, menu: false, polishSub: false, tip: false }; }); },
+      agentGroups: ['客服 Agent', '銷售 Agent'].map(function (g) {
+        return { label: g, items: AGENTS.filter(function (a) { return a.group === g; }).map(function (a) {
+          var sel = a.id === s.agent;
+          return { name: a.name, desc: a.desc, initial: a.initial, color: a.color, sel: sel, selStr: sel ? 'true' : 'false', bg: 'transparent', cls: sel ? 'is-sel' : '',
+            pick: function () { self.setState({ agent: a.id, agentOpen: false }); } };
+        }) };
+      }),
+      toggleMenu: function () { self.setState(function (st) { return { menu: !st.menu, polishSub: false, agentOpen: false }; }); },
+      polishSub: s.polishSub, polishStr: s.polishSub ? 'true' : 'false',
+      polishRowBg: s.polishSub ? '#EEF2FF' : 'transparent',
+      chevron: s.polishSub ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6',
+      runPolish: function () {
+        if (!self.state.draft.trim()) return;
+        self.aiApply(function (t) { return toFriendly(toConcise(t)); }, '已潤飾：更親切、修正錯字、精簡內容');
+      },
+      togglePolish: function () { if (!self.state.draft.trim()) return; self.setState(function (st) { return { polishSub: !st.polishSub }; }); },
+      openCustom: function () { self.setState({ customMode: null, refineOp: null, tool: 'custom', menu: false, status: null, prev: null, lastOp: 'ai', open: false }); },
+      closeCustom: function () { self.setState({ tool: null, customMode: null, open: false, lastOp: self.state.customMode === 'sug' ? null : self.state.lastOp }); },
+      polishOpts: [
+        { label: '更正式', run: function () { self.aiApply(toFormal, '已潤飾：更正式'); } },
+        { label: '更親切', run: function () { self.aiApply(toFriendly, '已潤飾：更親切'); } },
+        { label: '修正錯字', run: function () { self.aiApply(function (t) { return t; }, '已檢查，未發現錯字'); } },
+        { label: '精簡內容', run: function () { self.aiApply(toConcise, '已潤飾：精簡內容'); } }
+      ],
+      langs: [
+        { code: 'zh-HK', label: '繁體中文（香港）· 客人語言' },
+        { code: 'en', label: 'English' }
+      ].map(function (l) {
+        var on = s.lang === l.code;
+        return { label: l.label, pressed: on ? 'true' : 'false', fg: on ? '#4338CA' : '#444F5F', bg: on ? '#EEF2FF' : '#ffffff', bd: on ? '#6366F1' : '#D8DCE2', pick: function () { self.setState({ lang: l.code }); } };
+      }),
+      runTranslate: function () {
+        if (!self.state.draft.trim()) return;
+        self.setState({ menu: false });
+        var st0 = self.state, used = st0.used, orig = null;
+        if (used) {
+          var parts = used.split('-');
+          var base = SETS[Number(parts[0])][Number(parts[1])].body;
+          orig = st0.edits[used] != null ? st0.edits[used] : base;
+        }
+        self.aiApply(function (t) {
+          if (used && JA[used] && t === orig) return JA[used];
+          return toJA(t);
+        }, '已翻譯成日本語（客人語言）');
+      },
+      instr: s.instr,
+      onInstr: function (e) { self.setState({ instr: e.target.value }); },
+      runBg: s.instr.trim() ? '#6366F1' : '#B9C0CB',
+      runCustom: function () {
+        if (self.state.customMode === 'sug') {
+          var q = self.state.instr.trim(); if (!q) return;
+          var base = SETS[self.state.set][0].body;
+          self.setState({ instr: '', tool: null, customMode: null, open: false, used: null, sugInstr: '' });
+          self.aiApply(function (t) { var reply = applyInstr(base, q); return t.trim() ? t.replace(/\s+$/, '') + '\n\n' + reply : reply; }, '已依指令調整');
+          return;
+        }
+        self.runInstr(self.state.instr);
+      },
+      examples: ['加入免運優惠', '改成廣東話口語', '加一句感謝支持'].map(function (x) {
+        return { label: x, pick: function () { self.setState({ instr: x }); self.runInstr(x); } };
+      }),
+      send: function () {
+        if (!self.state.draft.trim()) return;
+        self.setState(function (st) {
+          return { sent: st.sent.concat([{ text: st.draft }]), draft: '', used: null, open: false, editing: null, tool: null, status: null, prev: null };
+        });
+      },
+      regenerate: function () { self.setState(function (st) { return { set: 1 - st.set, editing: null }; }); },
+      closePanel: function () { self.setState({ open: false, editing: null }); },
+      togglePanel: function () { self.setState(function (st) { return { open: !st.open }; }); }
+    };
+  }
+}
+</script>
+</body>
+</html>
